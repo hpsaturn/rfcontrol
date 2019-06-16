@@ -21,7 +21,6 @@ void setup()
 
 void loop()
 {
-  send("Hello there");
-  delay(1000);
+  send("p");
 }
 
