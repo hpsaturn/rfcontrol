@@ -29,6 +29,8 @@ void setup() {
 void loop() {
   if(digitalRead(pbIn0Up)==HIGH) send("u");
   if(digitalRead(pbIn1Dn)==HIGH) send("d");
+  if(digitalRead(pbIn2Lf)==HIGH) send("l");
+  if(digitalRead(pbIn3Rg)==HIGH) send("r");
   delay(10);
 }
 

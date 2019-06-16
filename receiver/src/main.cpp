@@ -24,7 +24,7 @@ byte receiveMessage() {
 }
 
 void motorSpeed (int value, int dir){
-  if (dir == 0 && value >=0 && value < 256 ) {
+  if (dir == 0 ) {
     analogWrite(motorPinL, 0);
     analogWrite(motorPinR, value);
   }
@@ -61,21 +61,30 @@ void loop() {
 
   switch (msg)
   {
-  case (char) 'u':
+  case (char)'u':
     Serial.print("motorUp: ");
-    if(motor_val >=0 && motor_val < 255) motorSpeed(motor_val++,motor_dir);
+    if (motor_val >= 0 && motor_val < 255)
+      motorSpeed(motor_val++, motor_dir);
     Serial.println(motor_val);
     break;
 
-  case (char) 'd':
+  case (char)'d':
     Serial.print("motorDn: ");
-    if(motor_val >0 && motor_val < 256) motorSpeed(motor_val--,motor_dir);
+    if (motor_val > 0 && motor_val < 256)
+      motorSpeed(motor_val--, motor_dir);
     Serial.println(motor_val);
     break;
-  
-  default:
+
+  case (char)'l':
+    Serial.println("motorDir: left");
+    motorSpeed(motor_val, 0);
+    break;
+
+  case (char)'r':
+    Serial.println("motorDir: right");
+    motorSpeed(motor_val, 1);
     break;
   }
-  
+
   delay(10);
 }
