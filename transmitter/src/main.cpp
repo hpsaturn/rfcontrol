@@ -8,9 +8,9 @@
 #include <VirtualWire.h>
 
 int pbIn0Up = 8;
-int pbIn1Dn = 9;
-int pbIn2Lf = 10;
-int pbIn3Rg = 11;
+int pbIn1Dn = 2;
+int pbIn2Lf = 3;
+int pbIn3Rg = 4;
 
 void send(char *message) {
   vw_send((uint8_t *)message, strlen(message));
@@ -19,7 +19,7 @@ void send(char *message) {
 
 void setup() {
   // Initialize the IO and ISR
-  vw_setup(2000); // Bits per sec
+  vw_setup(3000); // Bits per sec
   pinMode(pbIn0Up,INPUT_PULLUP);
   pinMode(pbIn1Dn,INPUT_PULLUP);
   pinMode(pbIn2Lf,INPUT_PULLUP);
@@ -27,10 +27,9 @@ void setup() {
 }
 
 void loop() {
-  if(digitalRead(pbIn0Up)==HIGH) send("u");
-  if(digitalRead(pbIn1Dn)==HIGH) send("d");
-  if(digitalRead(pbIn2Lf)==HIGH) send("l");
-  if(digitalRead(pbIn3Rg)==HIGH) send("r");
-  delay(10);
+  if(!digitalRead(pbIn0Up)) send("u");
+  if(!digitalRead(pbIn1Dn)) send("d");
+  if(!digitalRead(pbIn2Lf)) send("l");
+  if(!digitalRead(pbIn3Rg)) send("r");
 }
 

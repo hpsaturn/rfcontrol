@@ -49,7 +49,7 @@ void setup()
   Serial.begin(9600);
   Serial.println("Device is ready");
   // Initialize the IO and ISR
-  vw_setup(2000); // Bits per sec
+  vw_setup(3000); // Bits per sec
   vw_rx_start();  // Start the receiver
   pinMode(motorPinL,OUTPUT);
   pinMode(motorPinR,OUTPUT);
@@ -63,8 +63,10 @@ void loop() {
   {
   case (char)'u':
     Serial.print("motorUp: ");
-    if (motor_val >= 0 && motor_val < 255)
-      motorSpeed(motor_val++, motor_dir);
+    if (motor_val >= 0 && motor_val < 255){
+      motor_val=motor_val+1;
+      motorSpeed(motor_val, motor_dir);
+    }
     Serial.println(motor_val);
     break;
 
@@ -85,6 +87,4 @@ void loop() {
     motorSpeed(motor_val, 1);
     break;
   }
-
-  delay(10);
 }
