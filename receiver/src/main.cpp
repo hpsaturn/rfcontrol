@@ -67,7 +67,6 @@ void receiveMessage() {
     digitalWrite(led_pin, LOW);
     Serial.println("");
   }
-  return 0;
 }
 
 void motorSpeed (int value, int dir){
@@ -128,7 +127,7 @@ void setup()
   Serial.begin(9600);
   Serial.println("Device is ready");
   // Initialize the IO and ISR
-  vw_setup(3000); // Bits per sec
+  vw_setup(2000); // Bits per sec
   vw_rx_start();  // Start the receiver
   pinMode(motorPinL,OUTPUT);
   pinMode(motorPinR,OUTPUT);
@@ -137,15 +136,11 @@ void setup()
 
 void loop() {
   // Check whether we keep receving data, or we have a connection between the two modules
-  //currentTime = millis();
-  //if ( currentTime - lastReceiveTime > 2000 ) { // that means we have lost connection.
-  //  resetData(); // If connection is lost, reset the data.
-  //}
+  currentTime = millis();
+  if ( currentTime - lastReceiveTime > 2000 ) { // that means we have lost connection.
+   resetData(); // If connection is lost, reset the data.
+  }
 
-  receiveMessage();
-  // Serial.println(a);
-
-/*
   if (vw_get_message((uint8_t *)&data, sizeof(Data_Package))){
     Serial.print(" btnUp:");
     Serial.print(data.buttonUp);
@@ -155,6 +150,7 @@ void loop() {
     Serial.print(data.buttonLf);
     Serial.print(" btnRg:");
     Serial.println(data.buttonRg);
+    lastReceiveTime = millis(); // At this moment we have received the data
   }
-  */
+
 }

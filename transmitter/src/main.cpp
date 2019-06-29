@@ -43,7 +43,7 @@ void send(char *message) {
 void setup() {
   Serial.begin(9600);
   // Initialize the IO and ISR
-  vw_setup(1000); // Bits per sec
+  vw_setup(2000); // Bits per sec
   pinMode(jB1, INPUT_PULLUP);
   pinMode(jB2, INPUT_PULLUP);
   pinMode(t1, INPUT_PULLUP);
@@ -80,8 +80,8 @@ void loop() {
   data.tSwitch2 = digitalRead(t2);
   data.buttonUp = digitalRead(btnUp);
   data.buttonDn = digitalRead(btnDn);
-  data.buttonLf = digitalRead(btnRg);
-  data.buttonRg = digitalRead(btnLf);
+  data.buttonLf = digitalRead(btnLf);
+  data.buttonRg = digitalRead(btnRg);
 
   vw_send((uint8_t*)&data, sizeof(Data_Package));
   vw_wait_tx(); // Wait until the whole message is gone
