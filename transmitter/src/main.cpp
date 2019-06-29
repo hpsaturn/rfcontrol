@@ -17,7 +17,7 @@
 #define btnLf 3 // cross button Left
 #define btnRg 4 // cross button Right
 
-// Max size of this struct is 32 bytes - NRF24L01 buffer limit
+// Max size of this struct is 32 bytes ?
 struct Data_Package {
   byte j1PotX;
   byte j1PotY;
@@ -83,6 +83,6 @@ void loop() {
   data.buttonLf = digitalRead(btnRg);
   data.buttonRg = digitalRead(btnLf);
 
-  vw_send((uint8_t)&data, (uint8_t)sizeof(Data_Package));
+  vw_send((uint8_t*)&data, sizeof(Data_Package));
   vw_wait_tx(); // Wait until the whole message is gone
 }
