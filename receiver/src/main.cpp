@@ -11,10 +11,12 @@
 #define motorPinL  5
 #define motorPinR  6
 #define led_pin   13
+#define increment  5
 
 int motor_val = 0;
 int motor_dir = 0;
 bool toogleDir = false;
+bool toogleMusic = false;
 unsigned long lastReceiveTime = 0;
 unsigned long currentTime = 0;
 
@@ -34,9 +36,6 @@ struct Data_Package {
   byte buttonRg;
 };
 
-byte message[VW_MAX_MESSAGE_LEN];        // a buffer to store the incoming messages
-byte messageLength = VW_MAX_MESSAGE_LEN; // the size of the message
-
 Data_Package data;
 
 void resetData() {
@@ -55,26 +54,28 @@ void resetData() {
   data.buttonRg = 1;
 }
 
-void receiveMessage() {
-  if (vw_get_message(message, &messageLength)) { // Non-blocking
-    // if (vw_get_message((uint8_t)&data, (uint8_t)sizeof(Data_Package))) { // Non-blocking
-    digitalWrite(led_pin, HIGH); // Flash a light to show received good message
-    Serial.print("msg: ");
-    for (int i = 0; i < messageLength; i++)
-    {
-      Serial.print(message[i]);
-    }
-    digitalWrite(led_pin, LOW);
-    Serial.println("");
-  }
+void printData() {
+  Serial.print(" Up:");
+  Serial.print(data.buttonUp);
+  Serial.print(" Dn:");
+  Serial.print(data.buttonDn);
+  Serial.print(" Lf:");
+  Serial.print(data.buttonLf);
+  Serial.print(" Rg:");
+  Serial.println(data.buttonRg);
+}
+
+void musicCheck() {
+  if (toogleMusic) digitalWrite(musicPin, HIGH);
+  else digitalWrite(musicPin,LOW);
 }
 
 void motorSpeed (int value, int dir){
-  if (dir == 0 ) {
+  if (dir == 0 && value < 255 && value > 0) {
     analogWrite(motorPinL, 0);
     analogWrite(motorPinR, value);
   }
-  else if (dir == 1 ) {
+  else if (dir == 1 && value < 255 && value > 0) {
     analogWrite(motorPinR, 0);
     analogWrite(motorPinL, value);
   }
@@ -90,40 +91,19 @@ void motorTest() {
   }
 }
 
-void oldMotorControl(byte msg){
-  switch (msg)
-  {
-  case (char)'u':
-    Serial.print("motorUp: ");
-    if (motor_val >= 0 && motor_val < 255)
-    {
-      motor_val = motor_val + 1;
-      motorSpeed(motor_val, motor_dir);
-    }
-    Serial.println(motor_val);
-    break;
-
-  case (char)'d':
-    Serial.print("motorDn: ");
-    if (motor_val > 0 && motor_val < 256)
-      motorSpeed(motor_val--, motor_dir);
-    Serial.println(motor_val);
-    break;
-
-  case (char)'l':
-    Serial.println("motorDir: left");
-    motorSpeed(motor_val, 0);
-    break;
-
-  case (char)'r':
-    Serial.println("motorDir: right");
-    motorSpeed(motor_val, 1);
-    break;
-  }
+void speedUp () {
+  motor_val = motor_val + increment;
+  if(motor_val>255)motor_val = 255;
+  Serial.println(motor_val);
 }
 
-void setup()
-{
+void speedDn () {
+  motor_val = motor_val - increment;
+  if(motor_val<0)motor_val = 0;
+  Serial.println(motor_val);
+}
+
+void setup() {
   Serial.begin(9600);
   Serial.println("Device is ready");
   // Initialize the IO and ISR
@@ -131,8 +111,8 @@ void setup()
   vw_rx_start();  // Start the receiver
   pinMode(motorPinL,OUTPUT);
   pinMode(motorPinR,OUTPUT);
+  pinMode(musicPin, OUTPUT);
 }
-
 
 void loop() {
   // Check whether we keep receving data, or we have a connection between the two modules
@@ -142,15 +122,16 @@ void loop() {
   }
 
   if (vw_get_message((uint8_t *)&data, sizeof(Data_Package))){
-    Serial.print(" btnUp:");
-    Serial.print(data.buttonUp);
-    Serial.print(" btnDn:");
-    Serial.print(data.buttonDn);
-    Serial.print(" btnLf:");
-    Serial.print(data.buttonLf);
-    Serial.print(" btnRg:");
-    Serial.println(data.buttonRg);
+    //printData();
     lastReceiveTime = millis(); // At this moment we have received the data
+
+    if (data.buttonUp == 0 ) speedUp();
+    if (data.buttonDn == 0 ) speedDn();
+    if (data.buttonRg == 0 ) motor_dir = 0;
+    if (data.buttonLf == 0 ) motor_dir = 1;
+    if (data.buttonLf == 0 && data.buttonRg == 0)toogleMusic = !toogleMusic;
   }
 
+  musicCheck();
+  motorSpeed(motor_val,motor_dir);
 }
