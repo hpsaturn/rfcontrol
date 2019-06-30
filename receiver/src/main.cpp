@@ -22,18 +22,18 @@ unsigned long currentTime = 0;
 
 // Max size of this struct is 32 bytes ?
 struct Data_Package {
-  byte j1PotX;
-  byte j1PotY;
-  byte j1Button;
-  byte j2PotX;
-  byte j2PotY;
-  byte j2Button;
-  byte tSwitch1;
-  byte tSwitch2;
-  byte buttonUp;
-  byte buttonDn;
-  byte buttonLf;
-  byte buttonRg;
+  uint8_t j1PotX;
+  uint8_t j1PotY;
+  uint8_t j1Button;
+  uint8_t j2PotX;
+  uint8_t j2PotY;
+  uint8_t j2Button;
+  uint8_t tSwitch1;
+  uint8_t tSwitch2;
+  uint8_t buttonUp;
+  uint8_t buttonDn;
+  uint8_t buttonLf;
+  uint8_t buttonRg;
 };
 
 Data_Package data;
@@ -123,8 +123,10 @@ void loop() {
   // if ( currentTime - lastReceiveTime > 2000 ) { // that means we have lost connection.
   //  resetData(); // If connection is lost, reset the data.
   // }
+ 
+  uint8_t data_len = sizeof(Data_Package);
 
-  if (vw_get_message((uint8_t *)&data, sizeof(Data_Package))){
+  if (vw_get_message((uint8_t*)&data, &data_len)){
     // lastReceiveTime = millis(); // At this moment we have received the data
 
     if (data.buttonUp == 0 ) speedUp();
@@ -133,7 +135,9 @@ void loop() {
     if (data.buttonLf == 0 ) motor_dir = 1;
     if (data.buttonLf == 0 && data.buttonRg == 0)toogleMusic = !toogleMusic;
 
-    //printData();
+    // Serial.print("dlen:"); Serial.print(data_len);
+    // printData();
+
   }
 
   musicCheck();
