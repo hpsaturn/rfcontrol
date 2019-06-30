@@ -7,14 +7,14 @@
 #include <Arduino.h>
 #include <VirtualWire.h>
 
+#define led_pin   13
 #define musicPin   4
 #define motorPinL  5
 #define motorPinR  6
-#define led_pin   13
 #define increment  5
 
-int motor_val = 0;
-int motor_dir = 0;
+uint8_t motor_val = 0;
+uint8_t motor_dir = 0;
 bool toogleDir = false;
 bool toogleMusic = false;
 unsigned long lastReceiveTime = 0;
@@ -62,7 +62,11 @@ void printData() {
   Serial.print(" Lf:");
   Serial.print(data.buttonLf);
   Serial.print(" Rg:");
-  Serial.println(data.buttonRg);
+  Serial.print(data.buttonRg);
+  Serial.print(" MV:");
+  Serial.print(motor_val);
+  Serial.print(" MD:");
+  Serial.println(motor_dir);
 }
 
 void musicCheck() {
@@ -71,11 +75,11 @@ void musicCheck() {
 }
 
 void motorSpeed (int value, int dir){
-  if (dir == 0 && value < 255 && value > 0) {
+  if (dir == 0) {
     analogWrite(motorPinL, 0);
     analogWrite(motorPinR, value);
   }
-  else if (dir == 1 && value < 255 && value > 0) {
+  else if (dir == 1) {
     analogWrite(motorPinR, 0);
     analogWrite(motorPinL, value);
   }
@@ -92,15 +96,13 @@ void motorTest() {
 }
 
 void speedUp () {
-  motor_val = motor_val + increment;
-  if(motor_val>255)motor_val = 255;
-  Serial.println(motor_val);
+  if(motor_val <= (255-increment))
+    motor_val = motor_val + increment;
 }
 
 void speedDn () {
-  motor_val = motor_val - increment;
-  if(motor_val<0)motor_val = 0;
-  Serial.println(motor_val);
+  if(motor_val >= increment)
+    motor_val = motor_val - increment;
 }
 
 void setup() {
@@ -112,24 +114,26 @@ void setup() {
   pinMode(motorPinL,OUTPUT);
   pinMode(motorPinR,OUTPUT);
   pinMode(musicPin, OUTPUT);
+  resetData();
 }
 
 void loop() {
   // Check whether we keep receving data, or we have a connection between the two modules
-  currentTime = millis();
-  if ( currentTime - lastReceiveTime > 2000 ) { // that means we have lost connection.
-   resetData(); // If connection is lost, reset the data.
-  }
+  // currentTime = millis();
+  // if ( currentTime - lastReceiveTime > 2000 ) { // that means we have lost connection.
+  //  resetData(); // If connection is lost, reset the data.
+  // }
 
   if (vw_get_message((uint8_t *)&data, sizeof(Data_Package))){
-    //printData();
-    lastReceiveTime = millis(); // At this moment we have received the data
+    // lastReceiveTime = millis(); // At this moment we have received the data
 
     if (data.buttonUp == 0 ) speedUp();
     if (data.buttonDn == 0 ) speedDn();
     if (data.buttonRg == 0 ) motor_dir = 0;
     if (data.buttonLf == 0 ) motor_dir = 1;
     if (data.buttonLf == 0 && data.buttonRg == 0)toogleMusic = !toogleMusic;
+
+    //printData();
   }
 
   musicCheck();
