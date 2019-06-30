@@ -1,7 +1,7 @@
 /**
- * RF Remote control via 315 Mhz module. 
- * This code transmits messages using the VirtualWire library,
- * Connect the Receiver data pin to Arduino pin 11
+ * RF Remote control receiver via 315 Mhz module. 
+ * This code receive messages, Data_Package structure, 
+ * using the VirtualWire library.
  */
 
 #include <Arduino.h>
@@ -85,16 +85,6 @@ void motorSpeed (int value, int dir){
   }
 }
 
-void motorTest() {
-  if(toogleDir) motorSpeed (motor_val,0);
-  else motorSpeed (motor_val,1);
-
-  if(motor_val++ > 255) {
-    motor_val=0;
-    toogleDir = !toogleDir;
-  }
-}
-
 void speedUp () {
   if(motor_val <= (255-increment))
     motor_val = motor_val + increment;
@@ -128,18 +118,15 @@ void loop() {
 
   if (vw_get_message((uint8_t*)&data, &data_len)){
     // lastReceiveTime = millis(); // At this moment we have received the data
-
     if (data.buttonUp == 0 ) speedUp();
     if (data.buttonDn == 0 ) speedDn();
     if (data.buttonRg == 0 ) motor_dir = 0;
     if (data.buttonLf == 0 ) motor_dir = 1;
     if (data.buttonLf == 0 && data.buttonRg == 0)toogleMusic = !toogleMusic;
-
     // Serial.print("dlen:"); Serial.print(data_len);
     // printData();
-
   }
 
-  musicCheck();
+  musicCheck();  // on/off music chip
   motorSpeed(motor_val,motor_dir);
 }
