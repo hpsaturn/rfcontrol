@@ -22,9 +22,6 @@ struct Data_Package {
   byte j1PotX;
   byte j1PotY;
   byte j1Button;
-  byte j2PotX;
-  byte j2PotY;
-  byte j2Button;
   byte tSwitch1;
   byte tSwitch2;
   byte buttonUp;
@@ -56,10 +53,7 @@ void setup() {
   // Set initial default values
   data.j1PotX = 127;
   data.j1PotY = 127;
-  data.j2PotX = 127;
-  data.j2PotY = 127;
   data.j1Button = 1;
-  data.j2Button = 1;
   data.tSwitch1 = 1;
   data.tSwitch2 = 1;
   data.buttonUp = 1;
@@ -72,11 +66,9 @@ void loop() {
   // Read all analog inputs and map them to one Byte value
   data.j1PotX = map(analogRead(A1), 0, 1023, 0, 255); // Convert the analog read value from 0 to 1023 into a BYTE value from 0 to 255
   data.j1PotY = map(analogRead(A0), 0, 1023, 0, 255);
-  data.j2PotX = map(analogRead(A2), 0, 1023, 0, 255);
-  data.j2PotY = map(analogRead(A3), 0, 1023, 0, 255);
   // Read all digital inputs
   data.j1Button = digitalRead(jB1);
-  data.j2Button = digitalRead(jB2);
+  data.tSwitch1 = digitalRead(t1);
   data.tSwitch2 = digitalRead(t2);
   data.buttonUp = digitalRead(btnUp);
   data.buttonDn = digitalRead(btnDn);
